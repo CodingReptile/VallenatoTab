@@ -18,6 +18,16 @@ MuseScore {
         "fileName" : "VallenatoTab.debug",
     }
 
+    // Mappings between a note and all the accordion positions
+    property var rightHand_notesToButtonMapping: {}
+    property var leftHand_notesToButtonMapping: {}
+
+    // Mapping between the accordion button and the UI element
+    // If more UI element are added to the accordion, this mapping should also
+    // be updated
+    property var rightHandUIButtonMapping: {}
+    property var leftHandUIButtonMapping: {}
+
     onRun: {
         initialize()
     }
@@ -25,7 +35,75 @@ MuseScore {
     // Initializes all plugin data structures
     function initialize()
     {
+        // Configure UI
         buildButtonToUIMapping()
+
+        // Load from file
+        loadSettings()
+
+        // Build data structures
+        buildNoteMappings()
+    }
+
+    function buildNoteMappings()
+    {
+        rightHand_notesToButtonMapping = {}
+
+        for (var key in rightHandUIButtonMapping)
+        {
+            var currentNote = rightHandUIButtonMapping[key].text
+
+            if (validateRightHandNote(currentNote) && currentNote != "")
+            {
+                currentNote = convertRightHandNoteToProperNotation(currentNote)
+            
+                if (rightHand_notesToButtonMapping[currentNote] == null)
+                {
+                    rightHand_notesToButtonMapping[currentNote] = []
+                }
+
+                rightHand_notesToButtonMapping[currentNote].push(key)
+            }
+        }
+
+        leftHand_notesToButtonMapping = {}
+
+        for (var key in leftHandUIButtonMapping)
+        {
+            var currentNote = leftHandUIButtonMapping[key].text
+
+            if (validateLeftHandNote(currentNote) && currentNote != "")
+            {
+                if (leftHand_notesToButtonMapping[currentNote] == null)
+                {
+                    leftHand_notesToButtonMapping[currentNote] = []
+                }
+
+                leftHand_notesToButtonMapping[currentNote].push(key)
+            }
+        }
+
+        // DEBUG
+
+        for (var key in rightHand_notesToButtonMapping)
+        {
+            var notes = rightHand_notesToButtonMapping[key]
+
+            var allNotes = ""
+            for (var i=0; i<notes.length; i++)
+            {
+                if (i == 0)
+                {
+                    allNotes += notes[i]
+                }
+                else
+                {
+                    allNotes += ", " + notes[i]
+                }
+            }
+            
+            log ("note: '" + key + "': " + allNotes)
+        }
     }
 
     // Debugging log
@@ -33,6 +111,10 @@ MuseScore {
             id: logger
             source: homePath() + "/" + loggingConfiguration.fileName
             onError: console.log(msg)
+    }
+
+    function loadSettings()
+    {
     }
 
     // Log data
@@ -286,15 +368,20 @@ MuseScore {
                         TextField {
                             id : o_r_1_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
-                            
+                            validator: rightHandButtonValidator
+                            /*onEditingFinished : {
+                                log ("onEditingFinished triggered")
+
+                                accordionConfiguration.validateConfiguration()
+                            }*/
+
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
                         }
                         TextField {
                             id : o_r_1_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -302,7 +389,7 @@ MuseScore {
                         TextField {
                             id : o_r_1_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -316,7 +403,7 @@ MuseScore {
                         TextField {
                             id : o_r_2_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -324,7 +411,7 @@ MuseScore {
                         TextField {
                             id : o_r_2_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -332,7 +419,7 @@ MuseScore {
                         TextField {
                             id : o_r_2_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -346,7 +433,7 @@ MuseScore {
                         TextField {
                             id : o_r_3_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -354,7 +441,7 @@ MuseScore {
                         TextField {
                             id : o_r_3_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -362,7 +449,7 @@ MuseScore {
                         TextField {
                             id : o_r_3_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -374,15 +461,15 @@ MuseScore {
                         TextField {
                             id : o_l_1_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
-                            
+                            validator: leftHandButtonValidator
+
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
                         }
                         TextField {
                             id : o_l_1_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -392,7 +479,7 @@ MuseScore {
                         TextField {
                             id : o_r_4_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -400,7 +487,7 @@ MuseScore {
                         TextField {
                             id : o_r_4_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -408,7 +495,7 @@ MuseScore {
                         TextField {
                             id : o_r_4_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -420,7 +507,7 @@ MuseScore {
                         TextField {
                             id : o_l_2_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -428,7 +515,7 @@ MuseScore {
                         TextField {
                             id : o_l_2_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -438,7 +525,7 @@ MuseScore {
                         TextField {
                             id : o_r_5_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -446,7 +533,7 @@ MuseScore {
                         TextField {
                             id : o_r_5_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -454,7 +541,7 @@ MuseScore {
                         TextField {
                             id : o_r_5_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -466,7 +553,7 @@ MuseScore {
                         TextField {
                             id : o_l_3_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -474,7 +561,7 @@ MuseScore {
                         TextField {
                             id : o_l_3_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -484,7 +571,7 @@ MuseScore {
                         TextField {
                             id : o_r_6_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -492,7 +579,7 @@ MuseScore {
                         TextField {
                             id : o_r_6_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -500,7 +587,7 @@ MuseScore {
                         TextField {
                             id : o_r_6_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -512,7 +599,7 @@ MuseScore {
                         TextField {
                             id : o_l_4_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -520,7 +607,7 @@ MuseScore {
                         TextField {
                             id : o_l_4_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -530,7 +617,7 @@ MuseScore {
                         TextField {
                             id : o_r_7_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -538,7 +625,7 @@ MuseScore {
                         TextField {
                             id : o_r_7_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -546,7 +633,7 @@ MuseScore {
                         TextField {
                             id : o_r_7_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -558,7 +645,7 @@ MuseScore {
                         TextField {
                             id : o_l_5_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -566,7 +653,7 @@ MuseScore {
                         TextField {
                             id : o_l_5_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -576,7 +663,7 @@ MuseScore {
                         TextField {
                             id : o_r_8_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -584,7 +671,7 @@ MuseScore {
                         TextField {
                             id : o_r_8_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -592,7 +679,7 @@ MuseScore {
                         TextField {
                             id : o_r_8_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -604,7 +691,7 @@ MuseScore {
                         TextField {
                             id : o_l_6_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -612,7 +699,7 @@ MuseScore {
                         TextField {
                             id : o_l_6_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -622,7 +709,7 @@ MuseScore {
                         TextField {
                             id : o_r_9_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -630,7 +717,7 @@ MuseScore {
                         TextField {
                             id : o_r_9_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -638,7 +725,7 @@ MuseScore {
                         TextField {
                             id : o_r_9_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -652,7 +739,7 @@ MuseScore {
                         TextField {
                             id : o_r_10_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -660,7 +747,7 @@ MuseScore {
                         TextField {
                             id : o_r_10_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -668,7 +755,7 @@ MuseScore {
                         TextField {
                             id : o_r_10_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -682,7 +769,7 @@ MuseScore {
                         TextField {
                             id : o_r_11_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -690,7 +777,7 @@ MuseScore {
                         TextField {
                             id : o_r_11_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -698,7 +785,7 @@ MuseScore {
                         TextField {
                             id : o_r_11_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -790,7 +877,7 @@ MuseScore {
                         TextField {
                             id : c_r_1_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -798,7 +885,7 @@ MuseScore {
                         TextField {
                             id : c_r_1_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -806,7 +893,7 @@ MuseScore {
                         TextField {
                             id : c_r_1_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -820,7 +907,7 @@ MuseScore {
                         TextField {
                             id : c_r_2_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -828,7 +915,7 @@ MuseScore {
                         TextField {
                             id : c_r_2_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -836,7 +923,7 @@ MuseScore {
                         TextField {
                             id : c_r_2_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -850,7 +937,7 @@ MuseScore {
                         TextField {
                             id : c_r_3_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -858,7 +945,7 @@ MuseScore {
                         TextField {
                             id : c_r_3_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -866,7 +953,7 @@ MuseScore {
                         TextField {
                             id : c_r_3_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -878,7 +965,7 @@ MuseScore {
                         TextField {
                             id : c_l_1_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -886,7 +973,7 @@ MuseScore {
                         TextField {
                             id : c_l_1_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -896,7 +983,7 @@ MuseScore {
                         TextField {
                             id : c_r_4_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -904,7 +991,7 @@ MuseScore {
                         TextField {
                             id : c_r_4_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -912,7 +999,7 @@ MuseScore {
                         TextField {
                             id : c_r_4_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -924,7 +1011,7 @@ MuseScore {
                         TextField {
                             id : c_l_2_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -932,7 +1019,7 @@ MuseScore {
                         TextField {
                             id : c_l_2_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -942,7 +1029,7 @@ MuseScore {
                         TextField {
                             id : c_r_5_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -950,7 +1037,7 @@ MuseScore {
                         TextField {
                             id : c_r_5_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -958,7 +1045,7 @@ MuseScore {
                         TextField {
                             id : c_r_5_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -970,7 +1057,7 @@ MuseScore {
                         TextField {
                             id : c_l_3_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -978,7 +1065,7 @@ MuseScore {
                         TextField {
                             id : c_l_3_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -988,7 +1075,7 @@ MuseScore {
                         TextField {
                             id : c_r_6_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -996,7 +1083,7 @@ MuseScore {
                         TextField {
                             id : c_r_6_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1004,7 +1091,7 @@ MuseScore {
                         TextField {
                             id : c_r_6_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1016,7 +1103,7 @@ MuseScore {
                         TextField {
                             id : c_l_4_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1024,7 +1111,7 @@ MuseScore {
                         TextField {
                             id : c_l_4_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1034,7 +1121,7 @@ MuseScore {
                         TextField {
                             id : c_r_7_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1042,7 +1129,7 @@ MuseScore {
                         TextField {
                             id : c_r_7_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1050,7 +1137,7 @@ MuseScore {
                         TextField {
                             id : c_r_7_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1062,7 +1149,7 @@ MuseScore {
                         TextField {
                             id : c_l_5_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1070,7 +1157,7 @@ MuseScore {
                         TextField {
                             id : c_l_5_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1080,7 +1167,7 @@ MuseScore {
                         TextField {
                             id : c_r_8_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1088,7 +1175,7 @@ MuseScore {
                         TextField {
                             id : c_r_8_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1096,7 +1183,7 @@ MuseScore {
                         TextField {
                             id : c_r_8_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1108,7 +1195,7 @@ MuseScore {
                         TextField {
                             id : c_l_6_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1116,7 +1203,7 @@ MuseScore {
                         TextField {
                             id : c_l_6_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+                            validator: leftHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1126,7 +1213,7 @@ MuseScore {
                         TextField {
                             id : c_r_9_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1134,7 +1221,7 @@ MuseScore {
                         TextField {
                             id : c_r_9_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1142,7 +1229,7 @@ MuseScore {
                         TextField {
                             id : c_r_9_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1156,7 +1243,7 @@ MuseScore {
                         TextField {
                             id : c_r_10_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1164,7 +1251,7 @@ MuseScore {
                         TextField {
                             id : c_r_10_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1172,7 +1259,7 @@ MuseScore {
                         TextField {
                             id : c_r_10_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1186,7 +1273,7 @@ MuseScore {
                         TextField {
                             id : c_r_11_1
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1194,7 +1281,7 @@ MuseScore {
                         TextField {
                             id : c_r_11_2
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1202,7 +1289,7 @@ MuseScore {
                         TextField {
                             id : c_r_11_3
                             maximumLength : 4
-                            validator: RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+                            validator: rightHandButtonValidator
 
                             Layout.columnSpan: 1
                             Layout.preferredWidth: accordionRow.columnWidth
@@ -1218,8 +1305,9 @@ MuseScore {
 
         onAccepted :
         {
-            log ("Clicked in ok")
             validateConfiguration()
+            
+            buildNoteMappings()
         }
 
         function validateConfiguration()
@@ -1238,15 +1326,6 @@ MuseScore {
         {
         }
     }
-
-    // Mapping between a note and the accordion button
-    property var notesToButtonMapping: {}
-
-    // Mapping between the accordion button and the UI element
-    // If more UI element are added to the accordion, this mapping should also
-    // be updated
-    property var rightHandUIButtonMapping: {}
-    property var leftHandUIButtonMapping: {}
 
     // Builds a mapping between button names and it's UI counterparts.
     //
@@ -1378,6 +1457,9 @@ MuseScore {
         leftHandUIButtonMapping["c_l6'"] = c_l_6_2
     }
 
+    property var rightHandButtonValidator : RegExpValidator { regExp: /^[a-gA-G][#bB]?[0-9]$/g }
+    property var leftHandButtonValidator : RegExpValidator { regExp: /^[a-gA-G][#bB]?[mM]?$/g }
+
     // Validates that all right hand notes are valid
     function validateInputRightHand()
     {
@@ -1390,6 +1472,8 @@ MuseScore {
 
             if (validateRightHandNote(note))
             {
+                var standardNote = convertRightHandNoteToProperNotation(note)
+                rightHandUIButtonMapping[key].text = standardNote
                 continue
             }
 
@@ -1457,5 +1541,20 @@ MuseScore {
         }
 
         return false
+    }
+
+    // From the accordion configuration, build the notes mapping
+    function convertRightHandNoteToProperNotation(note)
+    {
+        // Precondition: the note passes validation of validateRightHandNote
+
+        if (note == "")
+        {
+            return note
+        }
+
+        note = note.charAt(0).toUpperCase() + note.charAt(1).toLowerCase() + note.slice(2)
+
+        return note
     }
 }
