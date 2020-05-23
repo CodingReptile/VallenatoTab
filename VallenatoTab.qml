@@ -56,7 +56,7 @@ MuseScore {
             if (validateRightHandNote(currentNote) && currentNote != "")
             {
                 currentNote = convertRightHandNoteToProperNotation(currentNote)
-            
+
                 if (rightHand_notesToButtonMapping[currentNote] == null)
                 {
                     rightHand_notesToButtonMapping[currentNote] = []
@@ -92,7 +92,7 @@ MuseScore {
             var allNotes = ""
             for (var i=0; i<notes.length; i++)
             {
-                if (i == 0)
+                if (i === 0)
                 {
                     allNotes += notes[i]
                 }
@@ -101,7 +101,7 @@ MuseScore {
                     allNotes += ", " + notes[i]
                 }
             }
-            
+
             log ("note: '" + key + "': " + allNotes)
         }
     }
@@ -262,15 +262,8 @@ MuseScore {
                         width : accordionFileGroupBox.columnWidth
                         onClicked : {
                             log ("Load accordion configuration")
-                        }
-                    }
 
-                    Button
-                    {
-                        text: qsTr("Save")
-                        width : accordionFileGroupBox.columnWidth
-                        onClicked : {
-                            log ("Save accordion configuration")
+                            fileLoadAccordion.open()
                         }
                     }
                 }
@@ -287,6 +280,509 @@ MuseScore {
                 id : accordionRow
                 property int columnWidth : 30
 
+                GroupBox {
+                    id : closingaccordionRow
+                    title: qsTr("Closing")
+                    property int columnWidth : 30
+
+                    GridLayout {
+                        columns: 8
+
+                        // General description
+                        Label {
+                            text : qsTr("Right hand")
+                            horizontalAlignment :  Text.AlignHCenter
+
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+
+                        Label {
+                            text : qsTr("Left hand")
+                            horizontalAlignment :  Text.AlignHCenter
+
+                            Layout.columnSpan: 2
+                            Layout.preferredWidth: accordionRow.columnWidth * 2
+                        }
+
+                        // Rows descriptions
+                        Label {
+                            text : qsTr("Col 1")
+                            horizontalAlignment :  Text.AlignLeft
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        Label {
+                            text : qsTr("Col 2")
+                            horizontalAlignment :  Text.AlignLeft
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        Label {
+                            text : qsTr("Col 3")
+                            horizontalAlignment :  Text.AlignLeft
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        Label {
+                            text : qsTr("Bass 2")
+                            horizontalAlignment :  Text.AlignLeft
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        Label {
+                            text : qsTr("Bass 1")
+                            horizontalAlignment :  Text.AlignLeft
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 1
+                        TextField {
+                            id : c_r_1_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_1_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_1_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 5
+                            Layout.preferredWidth: accordionRow.columnWidth * 5
+                        }
+
+                        // Row 2
+                        TextField {
+                            id : c_r_2_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_2_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_2_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 5
+                            Layout.preferredWidth: accordionRow.columnWidth * 5
+                        }
+
+                        // Row 3
+                        TextField {
+                            id : c_r_3_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_3_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_3_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_1_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_1_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 4
+                        TextField {
+                            id : c_r_4_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_4_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_4_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_2_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_2_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 5
+                        TextField {
+                            id : c_r_5_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_5_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_5_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_3_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_3_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 6
+                        TextField {
+                            id : c_r_6_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_6_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_6_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_4_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_4_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 7
+                        TextField {
+                            id : c_r_7_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_7_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_7_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_5_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_5_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 8
+                        TextField {
+                            id : c_r_8_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_8_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_8_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 3
+                            Layout.preferredWidth: accordionRow.columnWidth * 3
+                        }
+                        TextField {
+                            id : c_l_6_2
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_l_6_1
+                            maximumLength : 4
+                            validator: leftHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+
+                        // Row 9
+                        TextField {
+                            id : c_r_9_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_9_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_9_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 5
+                            Layout.preferredWidth: accordionRow.columnWidth * 5
+                        }
+
+                        // Row 10
+                        TextField {
+                            id : c_r_10_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_10_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_10_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 5
+                            Layout.preferredWidth: accordionRow.columnWidth * 5
+                        }
+
+                        // Row 11
+                        TextField {
+                            id : c_r_11_1
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_11_2
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        TextField {
+                            id : c_r_11_3
+                            maximumLength : 4
+                            validator: rightHandButtonValidator
+
+                            Layout.columnSpan: 1
+                            Layout.preferredWidth: accordionRow.columnWidth
+                        }
+                        Label {
+                            Layout.columnSpan: 5
+                            Layout.preferredWidth: accordionRow.columnWidth * 5
+                        }
+                    }
+                }
 
                 GroupBox {
                     id : openingAccordionLayoutGroupBox
@@ -796,517 +1292,13 @@ MuseScore {
                         }
                     }
                 }
-
-                GroupBox {
-                    id : closingaccordionRow
-                    title: qsTr("Closing")
-                    property int columnWidth : 30
-
-                    GridLayout {
-                        columns: 8
-
-                        // General description
-                        Label {
-                            text : qsTr("Right hand")
-                            horizontalAlignment :  Text.AlignHCenter
-
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-
-                        Label {
-                            text : qsTr("Left hand")
-                            horizontalAlignment :  Text.AlignHCenter
-
-                            Layout.columnSpan: 2
-                            Layout.preferredWidth: accordionRow.columnWidth * 2
-                        }
-
-                        // Rows descriptions
-                        Label {
-                            text : qsTr("Col 1")
-                            horizontalAlignment :  Text.AlignLeft
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        Label {
-                            text : qsTr("Col 2")
-                            horizontalAlignment :  Text.AlignLeft
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        Label {
-                            text : qsTr("Col 3")
-                            horizontalAlignment :  Text.AlignLeft
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        Label {
-                            text : qsTr("Bass 2")
-                            horizontalAlignment :  Text.AlignLeft
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        Label {
-                            text : qsTr("Bass 1")
-                            horizontalAlignment :  Text.AlignLeft
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 1
-                        TextField {
-                            id : c_r_1_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_1_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_1_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 5
-                            Layout.preferredWidth: accordionRow.columnWidth * 5
-                        }
-
-                        // Row 2
-                        TextField {
-                            id : c_r_2_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_2_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_2_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 5
-                            Layout.preferredWidth: accordionRow.columnWidth * 5
-                        }
-
-                        // Row 3
-                        TextField {
-                            id : c_r_3_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_3_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_3_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_1_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_1_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 4
-                        TextField {
-                            id : c_r_4_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_4_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_4_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_2_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_2_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 5
-                        TextField {
-                            id : c_r_5_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_5_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_5_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_3_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_3_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 6
-                        TextField {
-                            id : c_r_6_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_6_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_6_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_4_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_4_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 7
-                        TextField {
-                            id : c_r_7_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_7_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_7_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_5_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_5_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 8
-                        TextField {
-                            id : c_r_8_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_8_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_8_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 3
-                            Layout.preferredWidth: accordionRow.columnWidth * 3
-                        }
-                        TextField {
-                            id : c_l_6_2
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_l_6_1
-                            maximumLength : 4
-                            validator: leftHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-
-                        // Row 9
-                        TextField {
-                            id : c_r_9_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_9_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_9_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 5
-                            Layout.preferredWidth: accordionRow.columnWidth * 5
-                        }
-
-                        // Row 10
-                        TextField {
-                            id : c_r_10_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_10_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_10_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 5
-                            Layout.preferredWidth: accordionRow.columnWidth * 5
-                        }
-
-                        // Row 11
-                        TextField {
-                            id : c_r_11_1
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_11_2
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        TextField {
-                            id : c_r_11_3
-                            maximumLength : 4
-                            validator: rightHandButtonValidator
-
-                            Layout.columnSpan: 1
-                            Layout.preferredWidth: accordionRow.columnWidth
-                        }
-                        Label {
-                            Layout.columnSpan: 5
-                            Layout.preferredWidth: accordionRow.columnWidth * 5
-                        }
-                    }
-                }
             }
         }
 
         onAccepted :
         {
             validateConfiguration()
-            
+
             buildNoteMappings()
         }
 
@@ -1322,8 +1314,63 @@ MuseScore {
             close()
         }
 
-        function buildButtonMapping()
+        FileIO {
+            id: accordionConfigurationFile
+            onError: console.log(msg)
+        }
+
+        FileDialog {
+            id: fileLoadAccordion
+            title: qsTr("Load accordion file")
+            folder: shortcuts.documents + "/MuseScore3/plugins/VallenatoTab/accordions/"
+            nameFilters: [ "Accordion (*.accordion)", "All files (*)" ]
+            selectedNameFilter: "Accordion (*.accordion)"
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            onAccepted: {
+                log ("Load " + fileUrl)
+
+                if (fileUrl.toString().indexOf("file:///") != -1)
+                {
+                    accordionConfigurationFile.source = fileUrl.toString().substring(fileUrl.toString().charAt(9) === ':' ? 8 : 7)
+                }
+                else
+                {
+                    accordionConfigurationFile.source = fileUrl
+                }
+
+                log ( "source: " + accordionConfigurationFile.source )
+
+                var configuration = JSON.parse(accordionConfigurationFile.read())
+                loadConfiguration(configuration)
+            }
+
+            onRejected: {
+                  Qt.quit()
+            }
+          }
+    }
+
+    function loadConfiguration(configuration)
+    {
+        for (var key in rightHandUIButtonMapping)
         {
+            var note = configuration[key]
+            if (note != null && validateRightHandNote(note))
+            {
+                var standardNote = convertRightHandNoteToProperNotation(note)
+                rightHandUIButtonMapping[key].text = standardNote
+            }
+        }
+
+        for (var key in leftHandUIButtonMapping)
+        {
+            var note = configuration[key]
+            if (note != null && validateLeftHandNote(note))
+            {
+                leftHandUIButtonMapping[key].text = note
+            }
         }
     }
 
@@ -1425,7 +1472,7 @@ MuseScore {
         // Left hand, Column 1
         leftHandUIButtonMapping["o_l1"] = o_l_1_1
         leftHandUIButtonMapping["o_l2"] = o_l_2_1
-        leftHandUIButtonMapping["o_l3"] = o_l_2_1
+        leftHandUIButtonMapping["o_l3"] = o_l_3_1
         leftHandUIButtonMapping["o_l4"] = o_l_4_1
         leftHandUIButtonMapping["o_l5"] = o_l_5_1
         leftHandUIButtonMapping["o_l6"] = o_l_6_1
@@ -1433,7 +1480,7 @@ MuseScore {
         // Left hand, Column 2
         leftHandUIButtonMapping["o_l1'"] = o_l_1_2
         leftHandUIButtonMapping["o_l2'"] = o_l_2_2
-        leftHandUIButtonMapping["o_l3'"] = o_l_2_2
+        leftHandUIButtonMapping["o_l3'"] = o_l_3_2
         leftHandUIButtonMapping["o_l4'"] = o_l_4_2
         leftHandUIButtonMapping["o_l5'"] = o_l_5_2
         leftHandUIButtonMapping["o_l6'"] = o_l_6_2
@@ -1443,7 +1490,7 @@ MuseScore {
         // Left hand, Column 1
         leftHandUIButtonMapping["c_l1"] = c_l_1_1
         leftHandUIButtonMapping["c_l2"] = c_l_2_1
-        leftHandUIButtonMapping["c_l3"] = c_l_2_1
+        leftHandUIButtonMapping["c_l3"] = c_l_3_1
         leftHandUIButtonMapping["c_l4"] = c_l_4_1
         leftHandUIButtonMapping["c_l5"] = c_l_5_1
         leftHandUIButtonMapping["c_l6"] = c_l_6_1
@@ -1451,7 +1498,7 @@ MuseScore {
         // Left hand, Column 2
         leftHandUIButtonMapping["c_l1'"] = c_l_1_2
         leftHandUIButtonMapping["c_l2'"] = c_l_2_2
-        leftHandUIButtonMapping["c_l3'"] = c_l_2_2
+        leftHandUIButtonMapping["c_l3'"] = c_l_3_2
         leftHandUIButtonMapping["c_l4'"] = c_l_4_2
         leftHandUIButtonMapping["c_l5'"] = c_l_5_2
         leftHandUIButtonMapping["c_l6'"] = c_l_6_2
@@ -1487,14 +1534,14 @@ MuseScore {
         var regEx = /^[a-gA-G][#bB]?[0-9]$/g
 
         // Empty note is valid
-        if (note == "")
+        if (note === "")
         {
             return true
         }
 
         // Find matches, expect exactly one
         var matches = note.match(regEx)
-        if (matches != null && matches.length == 1)
+        if (matches != null && matches.length === 1)
         {
             return true
         }
@@ -1528,14 +1575,14 @@ MuseScore {
         var regEx = /^[a-gA-G][#bB]?[mM]?$/g
 
         // Empty note is valid
-        if (note == "")
+        if (note === "")
         {
             return true
         }
 
         // Find matches, expect exactly one
         var matches = note.match(regEx)
-        if (matches != null && matches.length == 1)
+        if (matches != null && matches.length === 1)
         {
             return true
         }
@@ -1548,7 +1595,7 @@ MuseScore {
     {
         // Precondition: the note passes validation of validateRightHandNote
 
-        if (note == "")
+        if (note === "")
         {
             return note
         }
