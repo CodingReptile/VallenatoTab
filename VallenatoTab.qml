@@ -13,7 +13,7 @@ MuseScore {
     property var loggingConfiguration:
     {
         "debug" : true,
-        "logToFile" : true,
+        "logToFile" : false,
         "logToConsole" : true,
         "fileName" : "VallenatoTab.debug",
     }
@@ -38,9 +38,6 @@ MuseScore {
         // Configure UI
         buildButtonToUIMapping()
 
-        // Load from file
-        loadSettings()
-
         // Build data structures
         buildNoteMappings()
     }
@@ -55,14 +52,22 @@ MuseScore {
 
             if (validateRightHandNote(currentNote) && currentNote != "")
             {
-                currentNote = convertRightHandNoteToProperNotation(currentNote)
+                //currentNote = convertRightHandNoteToProperNotation(currentNote)
 
-                if (rightHand_notesToButtonMapping[currentNote] == null)
+                //if (rightHand_notesToButtonMapping[currentNote] == null)
+                //{
+                //    rightHand_notesToButtonMapping[currentNote] = []
+                //}
+
+                //rightHand_notesToButtonMapping[currentNote].push(key)
+
+                var museScorePitch = convertRightHandNoteToMuseScorePitch(currentNote)
+                if (rightHand_notesToButtonMapping[museScorePitch] == null)
                 {
-                    rightHand_notesToButtonMapping[currentNote] = []
+                    rightHand_notesToButtonMapping[museScorePitch] = []
                 }
 
-                rightHand_notesToButtonMapping[currentNote].push(key)
+                rightHand_notesToButtonMapping[museScorePitch].push(key)
             }
         }
 
@@ -85,6 +90,7 @@ MuseScore {
 
         // DEBUG
 
+        /*
         for (var key in rightHand_notesToButtonMapping)
         {
             var notes = rightHand_notesToButtonMapping[key]
@@ -104,6 +110,28 @@ MuseScore {
 
             log ("note: '" + key + "': " + allNotes)
         }
+
+        for (var key in leftHand_notesToButtonMapping)
+        {
+            var notes = leftHand_notesToButtonMapping[key]
+
+            var allNotes = ""
+            for (var i=0; i<notes.length; i++)
+            {
+                if (i === 0)
+                {
+                    allNotes += notes[i]
+                }
+                else
+                {
+                    allNotes += ", " + notes[i]
+                }
+            }
+
+            log ("bass note: '" + key + "': " + allNotes)
+        }
+
+        */
     }
 
     // Debugging log
@@ -111,10 +139,6 @@ MuseScore {
             id: logger
             source: homePath() + "/" + loggingConfiguration.fileName
             onError: console.log(msg)
-    }
-
-    function loadSettings()
-    {
     }
 
     // Log data
@@ -184,19 +208,10 @@ MuseScore {
 
             RowLayout {
                 id: accordionGrid
-                //columns: 3
                 width : parent.width
                 height : parent.height
 
                 anchors.fill: parent
-
-                Label {
-                    text: qsTr("Accordion selected")
-                }
-
-                Text {
-                    text : "<None>"
-                }
 
                 Button {
                     text: qsTr("Configure")
@@ -218,11 +233,15 @@ MuseScore {
             Button {
                 text: qsTr("Run")
                 onClicked : {
+                    createTablature(curScore)
                 }
             }
 
             Button {
                 text: qsTr("Cancel")
+                onClicked : {
+                    Qt.quit()
+                }
             }
         }
     }
@@ -239,32 +258,35 @@ MuseScore {
             GroupBox {
                 id : accordionFileGroupBox
                 title: qsTr("Load/Save configuration")
-                property int columnWidth : 50
+                width : 300
+
+                Layout.fillWidth : true
 
                 RowLayout
                 {
-                    Label {
-                        text : qsTr("Configuration file")
-                        horizontalAlignment :  Text.AlignLeft
-                        width : accordionFileGroupBox.columnWidth
-                    }
-
-                    Label {
-                        id : selectedAccordionFile
-                        text : qsTr("")
-                        horizontalAlignment :  Text.AlignHCenter
-                        width : accordionFileGroupBox.columnWidth
-                    }
+                    Layout.fillWidth : true
 
                     Button
                     {
                         text: qsTr("Load")
-                        width : accordionFileGroupBox.columnWidth
                         onClicked : {
                             log ("Load accordion configuration")
 
                             fileLoadAccordion.open()
                         }
+                    }
+
+                    Label {
+                        text : qsTr("")
+                        horizontalAlignment :  Text.AlignHCenter
+                        Layout.preferredWidth: 30
+                    }
+
+                    Text {
+                        id : selectedAccordionFile
+                        text : qsTr("")
+                        horizontalAlignment :  Text.AlignHCenter
+                        font.bold : true
                     }
                 }
             }
@@ -280,10 +302,14 @@ MuseScore {
                 id : accordionRow
                 property int columnWidth : 30
 
+                Layout.fillWidth : true
+
                 GroupBox {
                     id : closingaccordionRow
                     title: qsTr("Closing")
                     property int columnWidth : 30
+
+                    Layout.fillWidth : true
 
                     GridLayout {
                         columns: 8
@@ -787,6 +813,8 @@ MuseScore {
                 GroupBox {
                     id : openingAccordionLayoutGroupBox
                     title: qsTr("Opening")
+
+                    Layout.fillWidth : true
 
                     GridLayout {
                         id: grid
@@ -1310,7 +1338,6 @@ MuseScore {
 
         onRejected :
         {
-            log ("Clicked in cancel")
             close()
         }
 
@@ -1343,11 +1370,14 @@ MuseScore {
                 log ( "source: " + accordionConfigurationFile.source )
 
                 var configuration = JSON.parse(accordionConfigurationFile.read())
-                loadConfiguration(configuration)
+                loadConfiguration(configuration.buttonMapping)
+
+                selectedAccordionFile.text = configuration.name
+
             }
 
             onRejected: {
-                  Qt.quit()
+                Qt.quit()
             }
           }
     }
@@ -1603,5 +1633,450 @@ MuseScore {
         note = note.charAt(0).toUpperCase() + note.charAt(1).toLowerCase() + note.slice(2)
 
         return note
+    }
+
+    // From the accordion configuration, build the notes mapping
+    function convertRightHandNoteToMuseScorePitch(note)
+    {
+        // Extract note
+        var noteRegEx = /^[a-gA-G][#bB]?/g
+
+        var matches = note.match(noteRegEx)
+        if (matches == null || matches.length != 1)
+        {
+            log ("Error parsing note of " + note)
+            return
+        }
+
+        var baseNote = stringNoteToBaseMusescoreNote(matches[0])
+        if (baseNote === -1)
+        {
+            log ("Error converting to base musescore pitch of " + note)
+            return
+        }
+
+        var octaveRegex = /[0-9]$/g
+        matches = note.match(octaveRegex)
+        if (matches == null || matches.length != 1)
+        {
+            log ("Error parsing octave of " + note)
+            return
+        }
+
+        var octave = parseInt(matches[0])
+
+        return (octave + 1) * 12 + baseNote
+    }
+
+    function stringNoteToBaseMusescoreNote(note)
+    {
+        switch (note.toLowerCase())
+        {
+            case 'c':
+                return 0
+            case 'c#':
+            case 'db':
+                return 1
+            case 'd':
+                return 2
+            case 'd#':
+            case 'eb':
+                return 3
+            case 'e':
+                return 4
+            case 'f':
+                return 5
+            case 'f#':
+            case 'gb':
+                return 6
+            case 'g':
+                return 7
+            case 'g#':
+            case 'ab':
+                return 8
+            case 'a':
+                return 9
+            case 'a#':
+            case 'bb':
+                return 10
+            case 'b':
+                return 11
+        }
+
+        return -1
+    }
+
+    // Traverse score and build tablature for it
+    function createTablature(score)
+    {
+        var cursor = score.newCursor()
+
+        // If only a segment was selected, only act on that section
+        if (cursor.segment)
+        {
+            cursor.rewind(Cursor.SELECTION_START)
+        }
+        else
+        {
+            cursor.rewind(Cursor.SCORE_START)
+        }
+
+        do
+        {
+            if (cursor.element.type == Element.CHORD)
+            {
+                var buttonsOpening = []
+                var buttonsClosing = []
+                
+                var chord = cursor.element.notes
+                for (var i=0; i < chord.length; i++)
+                {
+                    var pitch = chord[i].pitch
+
+                    // See if we have a matching pitch in our accordion
+                    if (rightHand_notesToButtonMapping[pitch] != null)
+                    {
+                        var noteArray = rightHand_notesToButtonMapping[pitch]
+                        for (var j=0; j < noteArray.length; j++)
+                        {
+                            if ( noteArray[j].startsWith("o_"))
+                            {
+                                buttonsOpening.push(noteArray[j].slice(2))
+                            }
+                            else if ( noteArray[j].startsWith("c_"))
+                            {
+                                buttonsClosing.push(noteArray[j].slice(2))
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Figure out what to do if no button found
+                    }
+                }
+                    
+                var closingTab = newElement(Element.LYRICS)
+                var openingTab = newElement(Element.LYRICS)
+                
+                var addClosing = true
+                var addOpening = true
+                
+                if (buttonsClosing.length == 0 && buttonsOpening.length == 0)
+                {
+                    addOpening = false
+                    closingTab.text = "?"
+                    openingTab.text = ""
+                }
+                else
+                {
+                    addOpening = buttonsOpening.length != 0
+                    addClosing = buttonsClosing.length != 0
+                    closingTab.text = buttonsClosing.join(',')
+                    openingTab.text = buttonsOpening.join(',')
+                }
+                
+                closingTab.offsetY = 3
+                closingTab.verse = 0
+                closingTab.autoplace = false
+                
+                openingTab.offsetY = 6
+                openingTab.verse = 1
+                openingTab.autoplace = false
+                
+                if (addClosing) {
+                    cursor.add (closingTab)
+                }
+                
+                if (addOpening) {
+                    cursor.add (openingTab) 
+                }                    
+            }
+        }
+        while (cursor.next())
+    }
+    
+    function cleanTablature(score)
+    {
+        var cursor = score.newCursor()
+
+        // If only a segment was selected, only act on that section
+        if (cursor.segment)
+        {
+            cursor.rewind(Cursor.SELECTION_START)
+        }
+        else
+        {
+            cursor.rewind(Cursor.SCORE_START)
+        }
+
+        do
+        {
+            if (cursor.element.type == Element.LYRICS)
+            {                
+                if (addClosing) {
+                    cursor.add (closingTab)
+                }
+                
+                if (addOpening) {
+                    cursor.add (openingTab) 
+                }                    
+            }
+        }
+        while (cursor.next())
+    }    
+
+    // Debug function
+    function elementTypeToString(element)
+    {
+        switch (element.type)
+        {
+            case 0:
+                return "INVALID"
+            case 1:
+                return "BRACKET_ITEM"
+            case 2:
+                return "PART"
+            case 3:
+                return "STAFF"
+            case 4:
+                return "SCORE"
+            case 5:
+                return "SYMBOL"
+            case 6:
+                return "TEXT"
+            case 7:
+                return "MEASURE_NUMBER"
+            case 8:
+                return "INSTRUMENT_NAME"
+            case 9:
+                return "SLUR_SEGMENT"
+            case 10:
+                return "TIE_SEGMENT"
+            case 11:
+                return "BAR_LINE"
+            case 12:
+                return "STAFF_LINES"
+            case 13:
+                return "SYSTEM_DIVIDER"
+            case 14:
+                return "STEM_SLASH"
+            case 15:
+                return "ARPEGGIO"
+            case 16:
+                return "ACCIDENTAL"
+            case 17:
+                return "LEDGER_LINE"
+            case 18:
+                return "STEM"
+            case 19:
+                return "NOTE"
+            case 20:
+                return "CLEF"
+            case 21:
+                return "KEYSIG"
+            case 22:
+                return "AMBITUS"
+            case 23:
+                return "TIMESIG"
+            case 24:
+                return "REST"
+            case 25:
+                return "BREATH"
+            case 26:
+                return "REPEAT_MEASURE"
+            case 27:
+                return "TIE"
+            case 28:
+                return "ARTICULATION"
+            case 29:
+                return "FERMATA"
+            case 30:
+                return "CHORDLINE"
+            case 31:
+                return "DYNAMIC"
+            case 32:
+                return "BEAM"
+            case 33:
+                return "HOOK"
+            case 34:
+                return "LYRICS"
+            case 35:
+                return "FIGURED_BASS"
+            case 36:
+                return "MARKER"
+            case 37:
+                return "JUMP"
+            case 38:
+                return "FINGERING"
+            case 39:
+                return "TUPLET"
+            case 40:
+                return "TEMPO_TEXT"
+            case 41:
+                return "STAFF_TEXT"
+            case 42:
+                return "SYSTEM_TEXT"
+            case 43:
+                return "REHEARSAL_MARK"
+            case 44:
+                return "INSTRUMENT_CHANGE"
+            case 45:
+                return "STAFFTYPE_CHANGE"
+            case 46:
+                return "HARMONY"
+            case 47:
+                return "FRET_DIAGRAM"
+            case 48:
+                return "BEND"
+            case 49:
+                return "TREMOLOBAR"
+            case 50:
+                return "VOLTA"
+            case 51:
+                return "HAIRPIN_SEGMENT"
+            case 52:
+                return "OTTAVA_SEGMENT"
+            case 53:
+                return "TRILL_SEGMENT"
+            case 54:
+                return "LET_RING_SEGMENT"
+            case 55:
+                return "VIBRATO_SEGMENT"
+            case 56:
+                return "PALM_MUTE_SEGMENT"
+            case 57:
+                return "TEXTLINE_SEGMENT"
+            case 58:
+                return "VOLTA_SEGMENT"
+            case 59:
+                return "PEDAL_SEGMENT"
+            case 60:
+                return "LYRICSLINE_SEGMENT"
+            case 61:
+                return "GLISSANDO_SEGMENT"
+            case 62:
+                return "LAYOUT_BREAK"
+            case 63:
+                return "SPACER"
+            case 64:
+                return "STAFF_STATE"
+            case 65:
+                return "NOTEHEAD"
+            case 66:
+                return "NOTEDOT"
+            case 67:
+                return "TREMOLO"
+            case 68:
+                return "IMAGE"
+            case 69:
+                return "MEASURE"
+            case 70:
+                return "SELECTION"
+            case 71:
+                return "LASSO"
+            case 72:
+                return "SHADOW_NOTE"
+            case 73:
+                return "TAB_DURATION_SYMBOL"
+            case 74:
+                return "FSYMBOL"
+            case 75:
+                return "PAGE"
+            case 76:
+                return "HAIRPIN"
+            case 77:
+                return "OTTAVA"
+            case 78:
+                return "PEDAL"
+            case 79:
+                return "TRILL"
+            case 80:
+                return "LET_RING"
+            case 81:
+                return "VIBRATO"
+            case 82:
+                return "PALM_MUTE"
+            case 83:
+                return "TEXTLINE"
+            case 84:
+                return "TEXTLINE_BASE"
+            case 85:
+                return "NOTELINE"
+            case 86:
+                return "LYRICSLINE"
+            case 87:
+                return "GLISSANDO"
+            case 88:
+                return "BRACKET"
+            case 89:
+                return "SEGMENT"
+            case 90:
+                return "SYSTEM"
+            case 91:
+                return "COMPOUND"
+            case 92:
+                return "CHORD"
+            case 93:
+                return "SLUR"
+            case 94:
+                return "ELEMENT"
+            case 95:
+                return "ELEMENT_LIST"
+            case 96:
+                return "STAFF_LIST"
+            case 97:
+                return "MEASURE_LIST"
+            case 98:
+                return "HBOX"
+            case 99:
+                return "VBOX"
+            case 100:
+                return "TBOX"
+            case 101:
+                return "FBOX"
+            case 102:
+                return "ICON"
+            case 103:
+                return "OSSIA"
+            case 104:
+                return "BAGPIPE_EMBELLISHMENT"
+            case 105:
+                return "STICKING"
+            case 106:
+                return "MAXTYPE"
+            default:
+                return "UNKNOWN"
+        }
+
+        return "UNKNOWN"
+    }
+
+    // Debug function
+    function describeObject(obj)
+    {
+        log (getAllPropertyNames(obj, true, true))
+    }
+
+    function getAllPropertyNames(obj, iterateSelfBool, iteratePrototypeBool) {
+        var props = [];
+
+        do {
+            if (iterateSelfBool) {
+                Object.getOwnPropertyNames(obj).forEach(function(prop) {
+
+                    if (props.indexOf(prop) === -1) {
+                        props.push(prop);
+                    }
+                });
+            }
+
+            if (!iteratePrototypeBool) {
+                break;
+            }
+
+            iterateSelfBool = true;
+        } while (obj = Object.getPrototypeOf(obj));
+
+        return props;
     }
 }
