@@ -1751,21 +1751,18 @@ MuseScore {
                 var allCombinations = []
                 for (var i=0; i < numCombinations; i++)
                 {
+                    var divider = 1
                     allCombinations[i] = []
                     for (var j = 0; j < chord.length; j++)
                     {
-                        var multiplier = 1
-                        for (var k=j+1; k < chord.length; k++)
-                        {
-                            multiplier *= buttonCombinations[k].length
-                        }
-
-                        var pos = Math.floor(i / multiplier) % buttonCombinations[j].length
+                        var pos = Math.floor(i / divider) % buttonCombinations[j].length
                         allCombinations[i].push(buttonCombinations[j][pos])
+                        divider *= buttonCombinations[j].length
                     }
                 }
 
-                log ("All possible combinations for the chord: " + numCombinations)
+                // Print all combinations for debugging purposes
+                log ("All possible combinations for the chord: " + allCombinations.length)
                 for (var i=0; i < allCombinations.length; i++)
                 {
                     var combination = ""
