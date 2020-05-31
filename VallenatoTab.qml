@@ -1748,32 +1748,54 @@ MuseScore {
                 }
 
                 // Build all combinations
-                var allCombinations = []
+                var openingCombinations = []
+                var closingCombinations = []
                 for (var i=0; i < numCombinations; i++)
                 {
                     var divider = 1
-                    allCombinations[i] = []
+                    var currentCombination = []
                     for (var j = 0; j < chord.length; j++)
                     {
                         var pos = Math.floor(i / divider) % buttonCombinations[j].length
-                        allCombinations[i].push(buttonCombinations[j][pos])
+                        currentCombination.push(buttonCombinations[j][pos])
                         divider *= buttonCombinations[j].length
                     }
+
+                    // Validate and classify the current combination
+                    validateAndAddToCombination(currentCombination, openingCombinations, closingCombinations)
                 }
 
                 // Print all combinations for debugging purposes
-                log ("All possible combinations for the chord: " + allCombinations.length)
-                for (var i=0; i < allCombinations.length; i++)
+                log ("Opening combinations: " + openingCombinations.length)
+                for (var key in openingCombinations)
                 {
                     var combination = ""
-                    for (var j=0; j < allCombinations[i].length; j++)
+                    for (var j=0; j < openingCombinations[key].length; j++)
                     {
                         if (j > 0)
                         {
                             combination += ","
                         }
 
-                        combination +=  allCombinations[i][j]
+                        combination +=  openingCombinations[key][j]
+                        
+                    }
+
+                    log (combination)
+                }
+
+                log ("Closing combinations: " + closingCombinations.length)
+                for (var key in closingCombinations)
+                {
+                    var combination = ""
+                    for (var j=0; j < closingCombinations[key].length; j++)
+                    {
+                        if (j > 0)
+                        {
+                            combination += ","
+                        }
+
+                        combination +=  closingCombinations[key][j]
                         
                     }
 
@@ -1795,8 +1817,7 @@ MuseScore {
                 else
                 {
                     addOpeningTab = buttonsOpening.length != 0
-                    addClosingTab
- = buttonsClosing.length != 0
+                    addClosingTab = buttonsClosing.length != 0
                     closingTab.text = buttonsClosing.join(',')
                     openingTab.text = buttonsOpening.join(',')
                 }
@@ -1820,36 +1841,49 @@ MuseScore {
         }
         while (cursor.next())
     }
-    
-    function cleanTablature(score)
-    {
-        var cursor = score.newCursor()
 
-        // If only a segment was selected, only act on that section
-        if (cursor.segment)
+    // Determines if the combination array is valid, and adds it to the proper array
+    // For instance, if a combination includes opening and closing buttons,
+    // it's impossible to play, thus, invalid.
+    function validateAndAddToCombination(combination, openingCombinations, closingCombinations)
+    {
+        var foundOpeningButton = false
+        var foundClosingButton = false
+
+        var cleanCombination = []
+        for (var i=0; i<combination.length; i++)
         {
-            cursor.rewind(Cursor.SELECTION_START)
+            if (combination[i].startsWith("o_"))
+            {
+                cleanCombination.push(combination[i].slice(2))
+                foundOpeningButton = true
+            }
+            else if (combination[i].startsWith("c_"))
+            {
+                cleanCombination.push(combination[i].slice(2))
+                foundClosingButton = true
+            }
+            else
+            {
+                cleanCombination.push(combination[i])
+            }
+        }
+
+        // Not a valid combination, skip
+        if (foundClosingButton && foundOpeningButton)
+        {
+            return
+        }
+
+        if (foundOpeningButton)
+        {
+            openingCombinations.push(cleanCombination)
         }
         else
         {
-            cursor.rewind(Cursor.SCORE_START)
+            closingCombinations.push(cleanCombination)
         }
-
-        do
-        {
-            if (cursor.element.type == Element.LYRICS)
-            {                
-                if (addClosingTab) {
-                    cursor.add (closingTab)
-                }
-                
-                if (addOpeningTab) {
-                    cursor.add (openingTab) 
-                }                    
-            }
-        }
-        while (cursor.next())
-    }    
+    }
 
     // Debug function
     function elementTypeToString(element)
