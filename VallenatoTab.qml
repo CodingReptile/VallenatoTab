@@ -1725,10 +1725,10 @@ MuseScore {
         {
             if (cursor.element.type == Element.CHORD)
             {
-                var buttonsOpening = []
-                var buttonsClosing = []
+                var buttonCombinations = []
                 
                 var chord = cursor.element.notes
+                var numCombinations = 1
                 for (var i=0; i < chord.length; i++)
                 {
                     var pitch = chord[i].pitch
@@ -1736,41 +1736,70 @@ MuseScore {
                     // See if we have a matching pitch in our accordion
                     if (rightHand_notesToButtonMapping[pitch] != null)
                     {
-                        var noteArray = rightHand_notesToButtonMapping[pitch]
-                        for (var j=0; j < noteArray.length; j++)
-                        {
-                            if ( noteArray[j].startsWith("o_"))
-                            {
-                                buttonsOpening.push(noteArray[j].slice(2))
-                            }
-                            else if ( noteArray[j].startsWith("c_"))
-                            {
-                                buttonsClosing.push(noteArray[j].slice(2))
-                            }
-                        }
+                        buttonCombinations[i] = rightHand_notesToButtonMapping[pitch]
                     }
                     else
                     {
-                        // Figure out what to do if no button found
+                        buttonCombinations[i] = []
+                        buttonCombinations[i].push("?")
+                    }
+
+                    numCombinations *= buttonCombinations[i].length
+                }
+
+                // Build all combinations
+                var allCombinations = []
+                for (var i=0; i < numCombinations; i++)
+                {
+                    allCombinations[i] = []
+                    for (var j = 0; j < chord.length; j++)
+                    {
+                        var multiplier = 1
+                        for (var k=j+1; k < chord.length; k++)
+                        {
+                            multiplier *= buttonCombinations[k].length
+                        }
+
+                        var pos = Math.floor(i / multiplier) % buttonCombinations[j].length
+                        allCombinations[i].push(buttonCombinations[j][pos])
                     }
                 }
+
+                log ("All possible combinations for the chord: " + numCombinations)
+                for (var i=0; i < allCombinations.length; i++)
+                {
+                    var combination = ""
+                    for (var j=0; j < allCombinations[i].length; j++)
+                    {
+                        if (j > 0)
+                        {
+                            combination += ","
+                        }
+
+                        combination +=  allCombinations[i][j]
+                        
+                    }
+
+                    log (combination)
+                }
                     
-                var closingTab = newElement(Element.LYRICS)
+                /*var closingTab = newElement(Element.LYRICS)
                 var openingTab = newElement(Element.LYRICS)
                 
-                var addClosing = true
-                var addOpening = true
+                var addClosingTab = true
+                var addOpeningTab = true
                 
                 if (buttonsClosing.length == 0 && buttonsOpening.length == 0)
                 {
-                    addOpening = false
+                    addOpeningTab = false
                     closingTab.text = "?"
                     openingTab.text = ""
                 }
                 else
                 {
-                    addOpening = buttonsOpening.length != 0
-                    addClosing = buttonsClosing.length != 0
+                    addOpeningTab = buttonsOpening.length != 0
+                    addClosingTab
+ = buttonsClosing.length != 0
                     closingTab.text = buttonsClosing.join(',')
                     openingTab.text = buttonsOpening.join(',')
                 }
@@ -1783,13 +1812,13 @@ MuseScore {
                 openingTab.verse = 1
                 openingTab.autoplace = false
                 
-                if (addClosing) {
+                if (addClosingTab) {
                     cursor.add (closingTab)
                 }
                 
-                if (addOpening) {
+                if (addOpeningTab) {
                     cursor.add (openingTab) 
-                }                    
+                }   */                 
             }
         }
         while (cursor.next())
@@ -1813,11 +1842,11 @@ MuseScore {
         {
             if (cursor.element.type == Element.LYRICS)
             {                
-                if (addClosing) {
+                if (addClosingTab) {
                     cursor.add (closingTab)
                 }
                 
-                if (addOpening) {
+                if (addOpeningTab) {
                     cursor.add (openingTab) 
                 }                    
             }
