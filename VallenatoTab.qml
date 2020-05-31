@@ -1801,32 +1801,41 @@ MuseScore {
 
                     log (combination)
                 }
+
+                // Build UI elements
+                var textButtonsOpening = ""
+                for (var i=0; i < openingCombinations.length; i++)
+                {
+                    if (i > 0)
+                    {
+                        textButtonsOpening += "/"
+                    }
+                    textButtonsOpening += openingCombinations[i].join(",")
+                }
+
+                var textbuttonsClosing = ""
+                for (var i=0; i < closingCombinations.length; i++)
+                {
+                    if (i > 0)
+                    {
+                        textbuttonsClosing += "/"
+                    }
+                    textbuttonsClosing += closingCombinations[i].join(",")
+                }
                     
-                /*var closingTab = newElement(Element.LYRICS)
+                var closingTab = newElement(Element.LYRICS)
                 var openingTab = newElement(Element.LYRICS)
                 
-                var addClosingTab = true
-                var addOpeningTab = true
+                var addClosingTab = textbuttonsClosing.length != 0
+                var addOpeningTab = textButtonsOpening.length != 0
+                closingTab.text = textbuttonsClosing
+                openingTab.text = textButtonsOpening
                 
-                if (buttonsClosing.length == 0 && buttonsOpening.length == 0)
-                {
-                    addOpeningTab = false
-                    closingTab.text = "?"
-                    openingTab.text = ""
-                }
-                else
-                {
-                    addOpeningTab = buttonsOpening.length != 0
-                    addClosingTab = buttonsClosing.length != 0
-                    closingTab.text = buttonsClosing.join(',')
-                    openingTab.text = buttonsOpening.join(',')
-                }
-                
-                closingTab.offsetY = 3
+                closingTab.offsetY = 6.5
                 closingTab.verse = 0
                 closingTab.autoplace = false
                 
-                openingTab.offsetY = 6
+                openingTab.offsetY = 9
                 openingTab.verse = 1
                 openingTab.autoplace = false
                 
@@ -1836,7 +1845,7 @@ MuseScore {
                 
                 if (addOpeningTab) {
                     cursor.add (openingTab) 
-                }   */                 
+                }              
             }
         }
         while (cursor.next())
